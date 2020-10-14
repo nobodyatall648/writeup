@@ -1,0 +1,48 @@
+foothold
+========
+/*notes:
+possible user:
+clave
+
+project-mayhem: ssh
+*/
+
+1) /help/bookmarks.html
+/*check source code
+Gitlab Login href: the hex code contain password and username
+clave:11des0081x
+*/
+
+User
+====
+1) project(your project) > administrator/profile > "+" button(drop down list) > upload file > submit merge request > merge 
+upload db-connect.php and revShell.php
+2) files stored in /profile/...
+3)http://10.10.10.114/profile/db-connect.php
+Array ( [0] => Array ( [id] => 1 [username] => clave [password] => c3NoLXN0cjBuZy1wQHNz== ) ) 
+
+4) http://10.10.10.114/profile/revShell.php //to get reverse shell
+//beside master(dropDownList) there's 'profile/'
+
+5) su clave
+   password: c3NoLXN0cjBuZy1wQHNz==		#can use ssh to login too
+6) get userFlag!
+
+Root
+====
+1) get the RemoteConnection.exe to local
+2) use immunity debugger to reverse engineer it
+//place breakpoint at ascii/unicode"clave" the part
+//if it stucked at ascii"user" and another line 
+//fill the line with NOPs and proceed 
+// the password will be shown at the registers
+
+
+0028F838   00933AC8  È:“.  ASCII "-ssh root@gitlab.htb -pw "Qf7]8YSV.wDNF*[7d?j&eD4^""
+
+3) ssh into root and grab the flag
+
+
+
+
+

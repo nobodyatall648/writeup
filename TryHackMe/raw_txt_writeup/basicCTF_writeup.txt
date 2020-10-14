@@ -1,0 +1,41 @@
+web dir
+=======
+/simple/admin/login.php
+
+CMS: CMS Made Simple
+CVE: https://www.exploit-db.com/raw/46635 CVE-2019-9053
+Exploit: SQLi 
+
+ftp got 1 file for mitch
+------------------------
+-seems like the password for system user are same and weak.
+
+possible Username
+-----------------
+-Mitch(from ftp text file)
+
+CVE-2019-9053 python script result
+----------------------------------
+[+] Salt for password found: 1dac0d92e9fa6bb2
+[+] Username found: mitch
+[+] Email found: admin@admin.com
+[+] Password found: 0c01f4468bd75d7a84c7eb73846e8d96
+[+] Password cracked: secret
+
+
+creds
+========
+CMS & SSH the same just like the ftp text said
+//mitch:secret
+
+user flag.txt
+-------------
+$ cat user.txt
+G00d j0b, keep up!
+
+-privEsc with vim (sudo -l)
+
+root flag
+---------
+# cat root.txt
+W3ll d0n3. You made it!

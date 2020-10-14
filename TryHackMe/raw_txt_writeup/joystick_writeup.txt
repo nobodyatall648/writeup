@@ -1,0 +1,27 @@
+foothold
+========
+1) visit port 80, get hint from source code
+/*
+hint said user steve,
+ftp port got problem
+steve didnt change password(assume some weak password)
+*/
+
+2)perform dictionary attack with hydra on ssh port 
+//steve:changeme
+
+User
+====
+1)grab user flag
+//flag{is_only_gaem}
+
+Root
+====
+1) check and see any other file we can read as guest 
+/*
+found notch home directory there's a root flag and we can read it as guest.
+*/
+
+2)grab root flag
+//flag{poorly_configured_permissions}
+

