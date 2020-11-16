@@ -1,6 +1,6 @@
 # Nuclear Warfare Writeup
 
-setup: 
+## setup: 
 
 -run the NuclearWarfare.iso in virtual machine
 
@@ -8,11 +8,11 @@ So we need to guess what's the 4 digits of the nuclear launch code to get the fl
 
 ![](img.png)
 
-Tools used:
+## Tools used:
 
 -Arduino Leonardo (to use the Keyboard.h library)
 
-Technique that I used:
+## Technique that I used:
 
 -write a arduino script that used Keyboard.h library to brute force 0000-9999
 
