@@ -18,7 +18,7 @@ So we need to guess what's the 4 digits of the nuclear launch code to get the fl
 
 -flash the code into my Arduino Leonardo & boot the image.
 
--click into the image & plug in the Arduino Leonardo 
+-click into the virtual machine window & plug in the Arduino Leonardo 
 
 -wait for it to brute force the correct nuclear launch code to capture the flag
 
