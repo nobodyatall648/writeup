@@ -20,7 +20,7 @@ Technique that I used:
 
 -click into the image & plug in the Arduino Leonardo 
 
--wait for it to brute force the correct nuclear launch code to capture our flag
+-wait for it to brute force the correct nuclear launch code to capture the flag
 
 PoC
 ===
