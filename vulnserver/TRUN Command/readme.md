@@ -14,3 +14,4 @@
 
 -spawning a reverse tcp shell using msfvenom generated shellcode
 
+-exploit script link: https://github.com/nobodyatall648/exploits/tree/main/vulnserver/TRUN%20Command
