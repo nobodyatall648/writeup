@@ -6,7 +6,7 @@ Things Covered:
 ```
 -finding the offset to overflow the pointer to next SEH record & the SEH address
 -using mona seh command to find 'pop pop ret' instruction
--writing assembly code to perform short jump
+-writing assembly code to perform short jump bypass unnecessary instructions
 -writing assembly code to perform addition & jump to padding part
 -execute shellcode in padding part
 ```
