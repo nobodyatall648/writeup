@@ -10,3 +10,6 @@ Things Covered:
 -writing assembly code to perform addition & jump to padding part
 -execute shellcode in padding part
 ```
+
+Exploit Link:
+https://github.com/nobodyatall648/exploits/tree/main/vulnserver/GMON%20Command
