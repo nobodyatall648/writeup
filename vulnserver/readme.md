@@ -6,4 +6,4 @@ Do check out the TRUN command write-up to have more detailed stuff about the bas
 
 The exploits will be placed in my exploit repo
 
--exploit script link: https://github.com/nobodyatall648/exploits/tree/main/vulnserver
+-exploit script link: https://github.com/nobodyatall648/VulnServer-Exploit
